@@ -1,0 +1,20 @@
+[project]
+name = "EasyTeleop-Node"
+version = "0.1.0"
+description = "Node/server runner for EasyTeleop"
+readme = "README.md"
+requires-python = ">=3.10"
+authors = [
+  { name = "Chain Pray", email = "qianpurui@gmail.com" },
+]
+dependencies = [
+  # 核心：依赖库仓
+  "easyteleop>=0.2.1",
+  "fastapi>=0.116.1",
+  "uvicorn>=0.35.0",
+  "websockets>=15.0.1",
+  "aiortc>=1.13.0",
+  "paho-mqtt>=2.1.0",
+  "requests>=2.32.5",
+  
+]
