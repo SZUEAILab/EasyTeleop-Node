@@ -1,6 +1,6 @@
 # Easy Teleoperate Node
 
-EasyTeleop-Node 是 EasyTeleop 分布式遥操作系统的节点组件，负责直接控制硬件设备并与后端服务通信。
+EasyTeleop-Node 是基于[EasyTeleop工具包](https://github.com/SZUEAILab/EasyTeleop)的分布式遥操作系统的节点组件，负责直接控制硬件设备并与后端服务通信。
 
 ## 功能特性
 
