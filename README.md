@@ -10,25 +10,6 @@ EasyTeleop-Node 是基于[EasyTeleop工具包](https://github.com/SZUEAILab/Easy
 - WebRTC支持：支持低延迟视频流传输
 - 可扩展架构：支持多实例部署，每个节点可管理一组设备
 
-## 系统架构
-
-本系统采用分布式架构，作为节点组件负责设备控制：
-
-### Node (设备控制节点)
-- 使用Python开发
-- 负责直接控制硬件设备（机械臂、VR、摄像头等）
-- 通过WebSocket与Backend通信
-- 支持多实例部署，每个Node可管理一组设备
-
-### Backend (后端服务)
-位于 [server](/server) 目录中：
-- 使用Python和FastAPI框架开发
-- 提供Web管理界面（位于 [server/static](/server/static)）
-- 管理多个Node节点的注册和通信
-- 提供RESTful API接口
-
-两者通过WebSocket RPC协议进行通信，实现设备控制与Web管理的分离。
-
 ## 项目结构
 
 ```
@@ -36,20 +17,6 @@ EasyTeleop-Node/
 ├── node.py                 # 节点主程序
 ├── WebSocketRPC.py         # WebSocket RPC实现
 ├── pyproject.toml          # 项目配置和依赖
-├── server/                 # 后端服务
-│   ├── backend.py          # 后端主程序
-│   ├── MQTTStatusSync.py   # MQTT状态同步模块
-│   ├── run_mqtt_sync.py    # MQTT同步启动脚本
-│   └── static/             # Web静态资源
-│       ├── index.html      # 主页
-│       ├── style.css       # 样式表
-│       └── js/             # JavaScript代码
-│           ├── main.js     # 主JS文件
-│           └── components/ # 组件JS文件
-│               ├── Dashboard.js
-│               ├── DeviceManager.js
-│               ├── Navigation.js
-│               └── TeleopManager.js
 └── README.md
 ```
 
@@ -62,38 +29,21 @@ EasyTeleop-Node/
 ### 安装依赖
 
 ```bash
+# 安装uv
+pip install uv
 # 安装项目依赖
 uv sync
 ```
 
 ## 使用方法
 
-### 启动服务
-
-1. 启动后端服务:
+### 启动节点
 ```bash
-# 在项目根目录下
-python server/backend.py
+uv run node.py
 ```
 
-2. 启动节点:
-```bash
-python node.py
-```
+## 依赖的外部服务
 
-访问 http://localhost:8000 查看Web界面
-
-### Web界面功能
-1. **设备管理**：
-   - 查看所有设备状态
-   - 添加/删除设备
-   - 配置设备参数
-   - 启动/停止设备
-
-2. **遥操作组管理**：
-   - 创建遥操作组
-   - 配置组内设备（左右机械臂、VR头显、摄像头）
-   - 启动/停止遥操作
-
-### API接口
-系统提供RESTful API接口，可通过 `/api` 路径访问各种功能。
+本项目需要以下外部服务配合使用:
+1. MQTT Broker (如Mosquitto) - 用于状态同步
+2. Backend服务 - 提供Web管理界面
