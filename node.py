@@ -11,6 +11,7 @@ import websockets
 
 from WebSocketRPC import WebSocketRPC
 from EasyTeleop.Device import get_device_types, get_device_classes
+from EasyTeleop.Device.Camera.RealSenseCamera import RealSenseCamera
 from EasyTeleop.TeleopGroup import get_teleop_group_types, get_teleop_group_classes
 
 # 添加paho-mqtt导入
@@ -57,6 +58,52 @@ class Node:
         self.websocket_rpc.register_method("node.get_device_types", self.get_device_types)
         self.websocket_rpc.register_method("node.get_teleop_group_types", self.get_teleop_group_types)
         self.websocket_rpc.register_method("node.get_node_id", self.get_node_id)
+        self.websocket_rpc.register_method("node.get_rpc_methods", self.get_rpc_methods)
+        self.websocket_rpc.register_method("node.custom.realsense.find_device", self.find_realsense_devices)
+        self.websocket_rpc.register_method("node.custom.test_device", self.test_device)
+
+    async def get_rpc_methods(self, params: Dict[str, Any] = None) -> Dict[str, Any]:
+        """
+        返回当前节点可供前端调用的RPC方法列表和参数结构
+        """
+        metadata = {
+            "node.custom.test_device": {
+                "description": "测试设备连通性",
+                "params": {"category": "string", "type": "string", "config": "object"},
+            },
+            "node.custom.realsense.find_device": {"description": "扫描可用RealSense设备", "params": {}},
+        }
+
+        methods_info = []
+        for name in self.websocket_rpc.methods.keys():
+            if not name.startswith("node.custom."):
+                continue
+            meta = metadata.get(name, {"description": "", "params": {}})
+            methods_info.append(
+                {
+                    "name": name,
+                    "description": meta.get("description", ""),
+                    "params": meta.get("params", {}),
+                }
+            )
+        return {"methods": methods_info}
+
+    async def find_realsense_devices(self, params: Dict[str, Any] = None) -> Dict[str, Any]:
+        """
+        查找可用的 RealSense 设备
+        Response:
+        {
+          "success": true,
+          "devices": [
+            {"name": "<device_name>", "serial": "<serial_number>"}
+          ]
+        }
+        """
+        try:
+            devices = RealSenseCamera.find_device() or []
+            return {"success": True, "devices": devices}
+        except Exception as e:
+            return {"success": False, "message": str(e)}
         
     async def get_node_id(self, params: Dict[str, Any] = None) -> Dict[str, Any]:
         """
@@ -590,7 +637,7 @@ class Node:
 async def main():
     # 创建节点实例
     node = Node(backend_url="http://121.43.162.224:8000", websocket_uri="ws://121.43.162.224:8000/ws/rpc",mqtt_broker="121.43.162.224")
-    # node = Node(mqtt_broker="121.43.162.224")
+    # node = Node()
     try:
         # 连接到后端
         websocket = await websockets.connect(node.websocket_uri)

@@ -9,7 +9,7 @@ authors = [
 ]
 dependencies = [
   # 核心：依赖库仓
-  "easyteleop>=0.2.3",
+  "easyteleop>=0.2.4",
   "websockets>=15.0.1",
   "paho-mqtt>=2.1.0",
   "requests>=2.32.5",
