@@ -2,6 +2,8 @@ import asyncio
 import json
 import uuid
 import os
+import io
+import hashlib
 from typing import Dict, Any, List, Optional
 import requests
 import time
@@ -43,6 +45,7 @@ class Node:
         self.teleop_groups_pool: Dict[int, Any] = {}
         self.postprocess_temp_dir = "datasets/temp"
         self.postprocess_output_dir = "datasets/hdf5"
+        self.view_hdf5_url = "http://localhost:5000"
         # 获取设备类型和遥操组类型配置
         self.device_types = get_device_types()
         self.device_classes = get_device_classes()
@@ -67,6 +70,7 @@ class Node:
         self.websocket_rpc.register_method("node.custom.postprocess.list_sessions", self.list_postprocess_sessions)
         self.websocket_rpc.register_method("node.custom.postprocess.process_session", self.process_postprocess_session)
         self.websocket_rpc.register_method("node.custom.postprocess.process_all", self.process_all_postprocess_sessions)
+        self.websocket_rpc.register_method("node.custom.postprocess.upload_hdf5", self.upload_postprocess_hdf5)
 
     async def get_rpc_methods(self, params: Dict[str, Any] = None) -> Dict[str, Any]:
         """
@@ -89,6 +93,10 @@ class Node:
             "node.custom.postprocess.process_all": {
                 "description": "Process all sessions under temp_dir",
                 "params": {},
+            },
+            "node.custom.postprocess.upload_hdf5": {
+                "description": "Upload processed HDF5 to view_hdf5 server",
+                "params": {"session_id": "string"},
             },
         }
 
@@ -171,6 +179,79 @@ class Node:
             "temp_dir": processor.temp_dir,
             "output_dir": processor.output_dir,
         }
+
+    def _upload_file_to_view_hdf5(self, file_path: str) -> Dict[str, Any]:
+        """Upload an HDF5 file to view_hdf5 using chunked API."""
+        if not os.path.exists(file_path):
+            return {"success": False, "message": f"file not found: {file_path}"}
+
+        upload_url = f"{self.view_hdf5_url}/api/upload_chunk"
+        merge_url = f"{self.view_hdf5_url}/api/merge_chunks"
+        chunk_size = 5 * 1024 * 1024  # 5MB
+
+        # Read file and split into chunks while computing md5
+        chunks: List[bytes] = []
+        md5 = hashlib.md5()
+        with open(file_path, "rb") as f:
+            while True:
+                data = f.read(chunk_size)
+                if not data:
+                    break
+                md5.update(data)
+                chunks.append(data)
+
+        total_chunks = len(chunks)
+        file_md5 = md5.hexdigest()
+        filename = os.path.basename(file_path)
+
+        for idx, data in enumerate(chunks):
+            files = {"chunk": ("chunk", io.BytesIO(data))}
+            form = {
+                "file_md5": file_md5,
+                "filename": filename,
+                "chunk_index": str(idx),
+                "total_chunks": str(total_chunks),
+            }
+            resp = requests.post(upload_url, files=files, data=form, timeout=30)
+            if resp.status_code != 200:
+                return {"success": False, "message": f"upload chunk {idx} failed: {resp.text}"}
+            try:
+                resp_json = resp.json()
+            except Exception:
+                return {"success": False, "message": f"upload chunk {idx} failed: invalid response"}
+            if not resp_json.get("success"):
+                return {"success": False, "message": f"upload chunk {idx} failed: {resp_json}"}
+
+        merge_payload = {"file_md5": file_md5, "filename": filename, "total_chunks": total_chunks}
+        merge_resp = requests.post(merge_url, json=merge_payload, timeout=30)
+        if merge_resp.status_code != 200:
+            return {"success": False, "message": f"merge failed: {merge_resp.text}"}
+        try:
+            merge_json = merge_resp.json()
+        except Exception:
+            return {"success": False, "message": "merge failed: invalid response"}
+        if not merge_json.get("success"):
+            return {"success": False, "message": f"merge failed: {merge_json}"}
+
+        return {
+            "success": True,
+            "file_path": merge_json.get("file_path"),
+            "filename": merge_json.get("filename", filename),
+            "total_chunks": total_chunks,
+            "file_md5": file_md5,
+        }
+
+    async def upload_postprocess_hdf5(self, params: Dict[str, Any] = None) -> Dict[str, Any]:
+        """Upload a processed HDF5 file to view_hdf5 via chunked API."""
+        if not isinstance(params, dict):
+            return {"success": False, "message": "params must be a dict"}
+        session_id = params.get("session_id")
+        if not session_id:
+            return {"success": False, "message": "session_id is required"}
+
+        file_path = os.path.join(self.postprocess_output_dir, f"{session_id}.hdf5")
+        result = await asyncio.to_thread(self._upload_file_to_view_hdf5, file_path)
+        return result
 
     async def find_realsense_devices(self, params: Dict[str, Any] = None) -> Dict[str, Any]:
         """
