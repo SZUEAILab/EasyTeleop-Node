@@ -2,12 +2,13 @@ import asyncio
 import json
 import uuid
 import os
-from typing import Dict, Any, List
+from typing import Dict, Any, List, Optional
 import requests
 import time
 import logging
 import threading
 import websockets
+from EasyTeleop.Components.PostProcess import DataPostProcessor
 
 from WebSocketRPC import WebSocketRPC
 from EasyTeleop.Device import get_device_types, get_device_classes
@@ -40,6 +41,8 @@ class Node:
         self.teleop_groups_config = []
         self.devices_pool: Dict[int, Any] = {}
         self.teleop_groups_pool: Dict[int, Any] = {}
+        self.postprocess_temp_dir = "datasets/temp"
+        self.postprocess_output_dir = "datasets/hdf5"
         # 获取设备类型和遥操组类型配置
         self.device_types = get_device_types()
         self.device_classes = get_device_classes()
@@ -61,6 +64,9 @@ class Node:
         self.websocket_rpc.register_method("node.get_rpc_methods", self.get_rpc_methods)
         self.websocket_rpc.register_method("node.custom.realsense.find_device", self.find_realsense_devices)
         self.websocket_rpc.register_method("node.custom.test_device", self.test_device)
+        self.websocket_rpc.register_method("node.custom.postprocess.list_sessions", self.list_postprocess_sessions)
+        self.websocket_rpc.register_method("node.custom.postprocess.process_session", self.process_postprocess_session)
+        self.websocket_rpc.register_method("node.custom.postprocess.process_all", self.process_all_postprocess_sessions)
 
     async def get_rpc_methods(self, params: Dict[str, Any] = None) -> Dict[str, Any]:
         """
@@ -72,6 +78,18 @@ class Node:
                 "params": {"category": "string", "type": "string", "config": "object"},
             },
             "node.custom.realsense.find_device": {"description": "扫描可用RealSense设备", "params": {}},
+            "node.custom.postprocess.list_sessions": {
+                "description": "List temp sessions available for post-processing",
+                "params": {},
+            },
+            "node.custom.postprocess.process_session": {
+                "description": "Convert one session to HDF5",
+                "params": {"session_id": "string"},
+            },
+            "node.custom.postprocess.process_all": {
+                "description": "Process all sessions under temp_dir",
+                "params": {},
+            },
         }
 
         methods_info = []
@@ -87,6 +105,72 @@ class Node:
                 }
             )
         return {"methods": methods_info}
+
+    def _build_post_processor(self) -> DataPostProcessor:
+        """Create a DataPostProcessor using default paths."""
+        return DataPostProcessor(
+            temp_dir=self.postprocess_temp_dir,
+            output_dir=self.postprocess_output_dir,
+        )
+
+    async def list_postprocess_sessions(self, params: Dict[str, Any] = None) -> Dict[str, Any]:
+        """List temp sessions available for post-processing."""
+        processor = self._build_post_processor()
+        sessions = await asyncio.to_thread(processor.find_sessions)
+        return {
+            "sessions": sessions,
+            "temp_dir": processor.temp_dir,
+            "output_dir": processor.output_dir,
+        }
+
+    async def process_postprocess_session(self, params: Dict[str, Any] = None) -> Dict[str, Any]:
+        """Convert a single session to HDF5."""
+        if not isinstance(params, dict):
+            return {"success": False, "message": "params must be a dict"}
+
+        session_id = params.get("session_id")
+        if not session_id:
+            return {"success": False, "message": "session_id is required"}
+
+        processor = self._build_post_processor()
+
+        try:
+            await asyncio.to_thread(processor.process_session_to_hdf5, session_id, None)
+            output_path = os.path.join(processor.output_dir, f"{session_id}.hdf5")
+            return {
+                "success": True,
+                "session": session_id,
+                "output_file": output_path,
+                "temp_dir": processor.temp_dir,
+            }
+        except Exception as exc:
+            return {"success": False, "message": str(exc)}
+
+    async def process_all_postprocess_sessions(self, params: Dict[str, Any] = None) -> Dict[str, Any]:
+        """Process every available session under temp_dir."""
+        processor = self._build_post_processor()
+        try:
+            sessions = await asyncio.to_thread(processor.find_sessions)
+        except Exception as exc:
+            return {"success": False, "message": str(exc)}
+
+        processed = []
+        failed: Dict[str, str] = {}
+
+        for session_id in sessions:
+            try:
+                await asyncio.to_thread(processor.process_session_to_hdf5, session_id)
+                processed.append(session_id)
+            except Exception as exc:
+                failed[session_id] = str(exc)
+
+        return {
+            "success": len(failed) == 0,
+            "processed": processed,
+            "failed": failed,
+            "temp_dir": processor.temp_dir,
+            "output_dir": processor.output_dir,
+        }
 
     async def find_realsense_devices(self, params: Dict[str, Any] = None) -> Dict[str, Any]:
         """
@@ -636,8 +720,8 @@ class Node:
 # 运行节点示例
 async def main():
     # 创建节点实例
-    node = Node(backend_url="http://121.43.162.224:8000", websocket_uri="ws://121.43.162.224:8000/ws/rpc",mqtt_broker="121.43.162.224")
-    # node = Node()
+    # node = Node(backend_url="http://121.43.162.224:8000", websocket_uri="ws://121.43.162.224:8000/ws/rpc",mqtt_broker="121.43.162.224")
+    node = Node()
     try:
         # 连接到后端
         websocket = await websockets.connect(node.websocket_uri)

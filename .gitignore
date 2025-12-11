@@ -28,3 +28,28 @@ Thumbs.db
 *.db
 
 node_uuid.txt
+
+# Logs
+*.log
+*.log.*
+
+# Cache
+.cache/
+.pytest_cache/
+.mypy_cache/
+.ipynb_checkpoints/
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Data/DB
+*.db
+
+node_uuid.txt
+
+datasets/
