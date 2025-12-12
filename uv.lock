@@ -560,7 +560,7 @@ wheels = [
 [[package]]
 name = "easyteleop-node"
 version = "0.1.0"
-source = { virtual = "." }
+source = { editable = "." }
 dependencies = [
     { name = "easyteleop" },
     { name = "paho-mqtt" },

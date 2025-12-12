@@ -27,7 +27,7 @@ Thumbs.db
 # Data/DB
 *.db
 
-node_uuid.txt
+data/
 
 # Logs
 *.log

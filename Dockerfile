@@ -16,6 +16,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/* 
 RUN pip install --no-cache-dir --upgrade pip 
 RUN pip install --no-cache-dir . 
-RUN pip install --no-cache-dir git+https://github.com/SZUEAILab/EasyTeleop.git
+# RUN pip install --no-cache-dir git+https://github.com/SZUEAILab/EasyTeleop.git
 
 CMD ["python", "node.py"]
