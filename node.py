@@ -648,7 +648,9 @@ class Node:
             
     def get_or_create_node_uuid(self) -> str:
         """获取或创建节点UUID"""
-        uuid_file = "data/node_uuid.txt"
+        uuid_dir = "data"
+        os.makedirs(uuid_dir, exist_ok=True)
+        uuid_file = os.path.join(uuid_dir, "node_uuid.txt")
         if os.path.exists(uuid_file):
             with open(uuid_file, "r") as f:
                 return f.read().strip()

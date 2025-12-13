@@ -528,7 +528,7 @@ wheels = [
 
 [[package]]
 name = "easyteleop"
-version = "0.2.4"
+version = "0.2.5"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "aiortc" },
@@ -544,17 +544,17 @@ dependencies = [
     { name = "scipy", version = "1.16.3", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.11'" },
     { name = "websockets" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/43/ac/842b9382d829853476187f10260c287260df22f4fd173afde546b131aa41/easyteleop-0.2.4.tar.gz", hash = "sha256:b207a3e1040475304dc925a08995471c4f054ad9f2fd82601aaeee5d9f3848b6", size = 146610, upload-time = "2025-12-09T09:26:31.924Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/f8/9d/6df253233cde88c97b09112024952c3602d6aa1520ef60b2e4ee4a3154d3/easyteleop-0.2.5.tar.gz", hash = "sha256:fa287136ae1e719a590a41b8cd77db3075e51c02157df1e8081ebb948ead8106", size = 147323, upload-time = "2025-12-12T22:15:40.532Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/89/b4/853b53ade82e6f02a8927cd5df715e428bbac3aaa161e19dd76e6bcdc478/easyteleop-0.2.4-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:2d0740ecb11223e69361afc1081a3b33421c2c3dac128b45c23fa1742e959d35", size = 183389, upload-time = "2025-12-09T09:26:20.284Z" },
-    { url = "https://files.pythonhosted.org/packages/2c/c0/f9ec76eb7c62c4067d972bc3e4303ab4847db7dd7e42c078c716fd66cb65/easyteleop-0.2.4-cp310-cp310-musllinux_1_2_x86_64.whl", hash = "sha256:7aaf9a19cdc25032fc3de859532a0e33ce92a1b91b2a20cf97770e0140be5f23", size = 182309, upload-time = "2025-12-09T09:26:21.837Z" },
-    { url = "https://files.pythonhosted.org/packages/d7/89/ebc1825b5d3e9ca934e10a7ca38c4647673663f49b2e39dbe701325f3553/easyteleop-0.2.4-cp310-cp310-win_amd64.whl", hash = "sha256:3054ffec20378594d8212e3b9316cb1b8cb2142cd87ba5c5034b10d0bdaaab6d", size = 114454, upload-time = "2025-12-09T09:26:22.976Z" },
-    { url = "https://files.pythonhosted.org/packages/a6/7e/cb1c2d9c651c36fa9905455615ae83a1db9c5cc131a57c4c59c403bfee6d/easyteleop-0.2.4-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:392b1d3f50f591fd541ad828f9ca06babcf4538342acdbf92e78780ac9bc8d3c", size = 184475, upload-time = "2025-12-09T09:26:24.055Z" },
-    { url = "https://files.pythonhosted.org/packages/b1/93/a6ce275686de0433474b59e16c4e33305ce9443b97bce44fc47a0271ed5e/easyteleop-0.2.4-cp311-cp311-musllinux_1_2_x86_64.whl", hash = "sha256:043662c056a1eae013a2019b77489577ffc9b0ef2755c83afb7cd57b06e973b8", size = 183462, upload-time = "2025-12-09T09:26:25.2Z" },
-    { url = "https://files.pythonhosted.org/packages/f5/21/f5c3fcf797a383617abc23908bdb976d1f64bea25740c6232c315591c820/easyteleop-0.2.4-cp311-cp311-win_amd64.whl", hash = "sha256:16fc11b0d92f9533aaff7aaa568693186cda4bef28bd7dd6fab002277c0e2e4d", size = 114450, upload-time = "2025-12-09T09:26:26.394Z" },
-    { url = "https://files.pythonhosted.org/packages/21/d4/d15a9dbafe4bb407ff17d6f4c8ec672a6727cf9b26fcd535c6be6f95704c/easyteleop-0.2.4-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:d6f5fd3b433ff624a9f21a31197c1aecde460caeda669a3f0ee28db241563334", size = 185056, upload-time = "2025-12-09T09:26:28.213Z" },
-    { url = "https://files.pythonhosted.org/packages/c2/26/3bed6e53a927392b5617d72e33b9f58ca56344d58cff898a6904a9bffea6/easyteleop-0.2.4-cp312-cp312-musllinux_1_2_x86_64.whl", hash = "sha256:b829e8e2e8d8c77df450993b59b5776b824bed4d7f8ba6a686160710696f4baa", size = 184249, upload-time = "2025-12-09T09:26:29.331Z" },
-    { url = "https://files.pythonhosted.org/packages/ec/ac/79b3e9a0a01c2801094cbbdd4a3fb7dabee8e9ed5732f229331a0130d678/easyteleop-0.2.4-cp312-cp312-win_amd64.whl", hash = "sha256:44d67068cf2cea1a313089653c1c309c32a8a0ee9c3596fec2b9787a7f598403", size = 114512, upload-time = "2025-12-09T09:26:30.518Z" },
+    { url = "https://files.pythonhosted.org/packages/3a/a1/4be1771fe0cf6bbba453ed33c8996eedb81d2ac5db85a1cf15f5dfe67d73/easyteleop-0.2.5-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:f4de05e9ca09149624b9b483fdbaa8512a11c68af7eb90720a711f5d5c4f55b7", size = 183709, upload-time = "2025-12-12T22:15:27.843Z" },
+    { url = "https://files.pythonhosted.org/packages/9e/8a/f83aaf3d3092920431b9cd800be6115c26953294256637f704a11205f652/easyteleop-0.2.5-cp310-cp310-musllinux_1_2_x86_64.whl", hash = "sha256:d6379a5c1973dc56eae8054c45c3fa18725f941757de6973c1962f65f4845425", size = 182613, upload-time = "2025-12-12T22:15:29.671Z" },
+    { url = "https://files.pythonhosted.org/packages/b9/56/f17b03263165041aebba6690f4d44bc61dd95db9ee2be7dff617911df8bf/easyteleop-0.2.5-cp310-cp310-win_amd64.whl", hash = "sha256:b6c9ba64170286f96941cab9c724b9133b3c8bc36ec786e6bd611b6c86055f8d", size = 114823, upload-time = "2025-12-12T22:15:31.314Z" },
+    { url = "https://files.pythonhosted.org/packages/e9/36/ae66f35b89854f53927822883ec6ab9519b22d27771fea77b9ef44a869af/easyteleop-0.2.5-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:1197dd475b3e29514aedec2bed01869233d7ab4ef63c277f8bcf8976f1462885", size = 184798, upload-time = "2025-12-12T22:15:32.45Z" },
+    { url = "https://files.pythonhosted.org/packages/72/cb/10d67aac11b226ab940234fb3fe05a3c7ae3fb4a7d17a61965875d3e5113/easyteleop-0.2.5-cp311-cp311-musllinux_1_2_x86_64.whl", hash = "sha256:837fd4e5e27d3e1d27847bb7f81a74403bfd7fd3633ce4c29ed13de309e7d84d", size = 183764, upload-time = "2025-12-12T22:15:33.681Z" },
+    { url = "https://files.pythonhosted.org/packages/71/8e/1cc60fd4909eee489f7e9c1330b19fe57a715ab3525ed39c8aa6875509d7/easyteleop-0.2.5-cp311-cp311-win_amd64.whl", hash = "sha256:65d0eb646d5cac99696ec7a48a9481c07c798ed94f6d47643f5e73b4d93412a0", size = 114819, upload-time = "2025-12-12T22:15:35.319Z" },
+    { url = "https://files.pythonhosted.org/packages/35/c3/08cf712a8d02369c5dc8224ebc1cc005231bbb0ca104c979420af89a75de/easyteleop-0.2.5-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:e0275b1ee6e0fac08a4112be0910a7842e167451fd016fc8bddd56cba657b3ce", size = 185394, upload-time = "2025-12-12T22:15:36.402Z" },
+    { url = "https://files.pythonhosted.org/packages/47/b8/4ca452920ddf315f3f6d33131c6f6d3683284a51859f5c7b57269ddda992/easyteleop-0.2.5-cp312-cp312-musllinux_1_2_x86_64.whl", hash = "sha256:5da63cbf52379f3cc09dc8f78dbc283b3562b78d780956e8076f11b2ba53fae2", size = 184563, upload-time = "2025-12-12T22:15:38.018Z" },
+    { url = "https://files.pythonhosted.org/packages/86/15/e4b96f7b8d027b1f25b6d7df0edd33a6f91fdb77875a3ed7fd414c548207/easyteleop-0.2.5-cp312-cp312-win_amd64.whl", hash = "sha256:8bbb27ff57037e7bd4723c407f0a18fdd6f1c67b3a0f5cb5d3144ffddb973f57", size = 114884, upload-time = "2025-12-12T22:15:39.401Z" },
 ]
 
 [[package]]
@@ -570,7 +570,7 @@ dependencies = [
 
 [package.metadata]
 requires-dist = [
-    { name = "easyteleop", specifier = ">=0.2.4" },
+    { name = "easyteleop", specifier = ">=0.2.5" },
     { name = "paho-mqtt", specifier = ">=2.1.0" },
     { name = "requests", specifier = ">=2.32.5" },
     { name = "websockets", specifier = ">=15.0.1" },
