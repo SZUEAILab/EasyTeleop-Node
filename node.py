@@ -11,6 +11,9 @@ import logging
 import threading
 import websockets
 
+# Load environment variables from .env for local runs.
+from dotenv import load_dotenv
+
 # Force matplotlib to use a non-GUI backend before EasyTeleop imports (Visualizer defaults to TkAgg)
 import matplotlib
 
@@ -809,19 +812,20 @@ class Node:
             
 # 运行节点示例
 async def main():
+    load_dotenv()
     backend_url = os.environ.get("BACKEND_URL", "http://localhost:8000")
     websocket_uri = os.environ.get("WEBSOCKET_URI", "ws://localhost:8000/ws/rpc")
     mqtt_broker = os.environ.get("MQTT_BROKER", "localhost")
-    view_hdf5_url = os.environ.get("VIEW_HDF5_URL")
+    mqtt_port = int(os.environ.get("MQTT_PORT", 1883))
+    view_hdf5_url = os.environ.get("VIEW_HDF5_URL", "http://localhost:5000")
 
     # 创建节点实例
-    node = Node(backend_url=backend_url, websocket_uri=websocket_uri, mqtt_broker=mqtt_broker)
-    # node = Node(backend_url="http://121.43.162.224:8000", websocket_uri="ws://121.43.162.224:8000/ws/rpc",mqtt_broker="121.43.162.224")
-    if view_hdf5_url:
-        node.view_hdf5_url = view_hdf5_url
+    node = Node(backend_url=backend_url, websocket_uri=websocket_uri, mqtt_broker=mqtt_broker, mqtt_port=mqtt_port)
+    node.view_hdf5_url = view_hdf5_url
     try:
         # 连接到后端
         websocket = await websockets.connect(node.websocket_uri)
+        print("已连接到后端")
         node.websocket_rpc.websocket = websocket
         
         task = asyncio.create_task(node.websocket_rpc._message_handler(websocket))

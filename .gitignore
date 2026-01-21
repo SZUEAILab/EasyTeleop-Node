@@ -47,6 +47,9 @@ data/
 .DS_Store
 Thumbs.db
 
+.env*
+!.env.example
+
 # Data/DB
 *.db
 
