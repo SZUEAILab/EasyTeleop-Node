@@ -1,0 +1,28 @@
+version: "3.9"
+
+services:
+  node:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: easyteleop/node
+    container_name: easyteleop-node
+    privileged: true
+    volumes:
+      - ./datasets:/app/datasets
+      - ./data:/app/data
+      - /dev:/dev
+    environment:
+      - PORT=${PORT:-8000}
+      - HOST=${HOST:-0.0.0.0}
+      - BACKEND_URL=${BACKEND_URL:-http://localhost:8000}
+      - WEBSOCKET_URI=${WEBSOCKET_URI:-ws://localhost:8000/ws/rpc}
+      - MQTT_BROKER=${MQTT_BROKER:-localhost}
+      - MQTT_PORT=${MQTT_PORT:-1883}
+      - MQTT_USERNAME=${MQTT_USERNAME:-}
+      - MQTT_PASSWORD=${MQTT_PASSWORD:-}
+      - POSTPROCESS_TEMP_DIR=${POSTPROCESS_TEMP_DIR:-datasets/temp}
+      - POSTPROCESS_OUTPUT_DIR=${POSTPROCESS_OUTPUT_DIR:-datasets/hdf5}
+      - VIEW_HDF5_URL=${VIEW_HDF5_URL:-http://localhost:5000}
+      - NODE_ID=${NODE_ID:-}
+    restart: unless-stopped
