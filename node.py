@@ -736,6 +736,7 @@ class Node:
             try:
                 # 使用 MQTT v3.1.1 协议和回调 API v2
                 self.mqtt_client = mqtt.Client(protocol=mqtt.MQTTv311, callback_api_version=mqtt.CallbackAPIVersion.VERSION2)
+                self.mqtt_client.on_disconnect = self._on_mqtt_disconnect
                 
                 print(f"尝试连接MQTT服务器 {self.mqtt_broker}:{self.mqtt_port}...")
                 
@@ -774,6 +775,22 @@ class Node:
                 self.mqtt_client = None
                 raise
             
+    def _on_mqtt_disconnect(self, client, userdata, reason_code, properties=None):
+        """Best-effort offline publish before shutdown."""
+        try:
+            # On graceful shutdown, publish offline for all retained status topics.
+            if reason_code == 0:
+                self._publish_all_offline()
+        except Exception as e:
+            print(f"MQTT disconnect callback error: {e}")
+
+    def _publish_all_offline(self):
+        """Publish retained offline statuses for node/devices/teleop groups."""
+        self._report_node_status(0)
+        self._set_all_devices_offline()
+        self._set_all_teleop_groups_offline()
+
+
     def _report_node_status(self,status):
         """上报节点状态到MQTT"""
         if self.mqtt_client and self.node_id:
@@ -845,7 +862,11 @@ async def main():
         await task
         
     except KeyboardInterrupt:
-        print("节点已停止")
+        print("Node stopped.")
+        if node.mqtt_client:
+            node._publish_all_offline()
+            node.mqtt_client.loop_stop()
+            node.mqtt_client.disconnect()
     except Exception as e:
         print(f"节点运行出错: {e}")
 
